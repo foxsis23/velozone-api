@@ -1,0 +1,14 @@
+{
+  "name": "web_backend_lab",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "mysql2": "^3.9.7",
+    "sequelize": "^6.37.3"
+  }
+}
