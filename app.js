@@ -46,6 +46,19 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// OAuth callback page (показує токени після Google login)
+app.get('/oauth/callback', (req, res) => {
+  const { accessToken, refreshToken } = req.query;
+  res.send(`
+    <html><body style="font-family:monospace;padding:2rem">
+      <h2>OAuth Login Successful</h2>
+      <p><b>Access Token:</b><br><textarea rows="3" cols="80">${accessToken || ''}</textarea></p>
+      <p><b>Refresh Token:</b><br><input value="${refreshToken || ''}" size="60"/></p>
+      <p>Use the Access Token as <code>Authorization: Bearer &lt;token&gt;</code></p>
+    </body></html>
+  `);
+});
+
 // ─── 404 handler ─────────────────────────────────────────────────────────────
 
 app.use((_req, res) => {

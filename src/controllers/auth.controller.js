@@ -77,7 +77,12 @@ export async function register(req, res) {
       data: { id: user.id, email: user.email, username: user.username },
     });
   } catch (err) {
-    logger.error(`Register error: ${err.message}`, err);
+    if (err.name === 'SequelizeUniqueConstraintError') {
+      const field = err.errors?.[0]?.path || 'field';
+      const message = field === 'username' ? 'Username already taken' : 'Email already registered';
+      return res.status(409).json({ success: false, error: message });
+    }
+    logger.error(`Register error: ${err.message}`);
     return res.status(500).json({ success: false, error: 'Registration failed' });
   }
 }
