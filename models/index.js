@@ -6,6 +6,9 @@ import defineCategory from './Category.js';
 import defineProduct from './Product.js';
 import defineOrder from './Order.js';
 import defineOrderItem from './OrderItem.js';
+import defineUser from './User.js';
+import defineRefreshToken from './RefreshToken.js';
+import defineLoginAttempt from './LoginAttempt.js';
 
 dotenv.config();
 
@@ -26,6 +29,9 @@ const Category = defineCategory(sequelize);
 const Product = defineProduct(sequelize);
 const Order = defineOrder(sequelize);
 const OrderItem = defineOrderItem(sequelize);
+const User = defineUser(sequelize);
+const RefreshToken = defineRefreshToken(sequelize);
+const LoginAttempt = defineLoginAttempt(sequelize);
 
 // Associations
 Category.hasMany(Product, { foreignKey: 'category_id' });
@@ -43,4 +49,8 @@ OrderItem.belongsTo(Order, { foreignKey: 'order_id' });
 OrderItem.belongsTo(Product, { foreignKey: 'product_id' });
 Product.hasMany(OrderItem, { foreignKey: 'product_id' });
 
-export { sequelize, Admin, Category, Product, Order, OrderItem };
+// User associations
+User.hasMany(RefreshToken, { foreignKey: 'user_id', onDelete: 'CASCADE' });
+RefreshToken.belongsTo(User, { foreignKey: 'user_id' });
+
+export { sequelize, Admin, Category, Product, Order, OrderItem, User, RefreshToken, LoginAttempt };
