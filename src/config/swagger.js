@@ -23,6 +23,47 @@ const options = {
         },
       },
       schemas: {
+        Category: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer', example: 1 },
+            name: { type: 'string', example: 'Гальма' },
+            description: { type: 'string', example: 'Гальмівні системи та комплектуючі' },
+          },
+        },
+        Product: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer', example: 1 },
+            name: { type: 'string', example: 'Гальмівна колодка Shimano' },
+            price: { type: 'number', format: 'float', example: 349.99 },
+            description: { type: 'string', example: 'Органічні колодки для дискових гальм' },
+            composition: { type: 'string', example: 'Органічний матеріал, алюмінієвий корпус' },
+            category_id: { type: 'integer', example: 1 },
+            Category: { $ref: '#/components/schemas/Category' },
+          },
+        },
+        OrderItem: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer', example: 1 },
+            product_id: { type: 'integer', example: 1 },
+            quantity: { type: 'integer', example: 2 },
+            price_at_order: { type: 'number', format: 'float', example: 349.99 },
+            Product: { $ref: '#/components/schemas/Product' },
+          },
+        },
+        Order: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer', example: 1 },
+            customer_name: { type: 'string', example: 'Іван Петренко' },
+            phone: { type: 'string', example: '+380501234567' },
+            order_date: { type: 'string', format: 'date-time' },
+            status: { type: 'string', enum: ['pending', 'processing', 'completed', 'cancelled'], example: 'pending' },
+            OrderItems: { type: 'array', items: { $ref: '#/components/schemas/OrderItem' } },
+          },
+        },
         User: {
           type: 'object',
           properties: {

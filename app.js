@@ -9,6 +9,9 @@ import { configurePassport } from './src/config/passport.js';
 import { swaggerSpec } from './src/config/swagger.js';
 import authRoutes from './src/routes/auth.routes.js';
 import userRoutes from './src/routes/user.routes.js';
+import categoryRoutes from './src/routes/category.routes.js';
+import productRoutes from './src/routes/product.routes.js';
+import orderRoutes from './src/routes/order.routes.js';
 import { apiRateLimiter } from './src/middleware/rateLimiter.js';
 import logger from './src/utils/logger.js';
 
@@ -48,6 +51,9 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Health check
 app.get('/health', (_req, res) => {

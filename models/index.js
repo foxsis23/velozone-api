@@ -37,20 +37,17 @@ const RefreshToken = defineRefreshToken(sequelize);
 const LoginAttempt = defineLoginAttempt(sequelize);
 
 // Associations
-Category.hasMany(Product, { foreignKey: 'category_id' });
-Product.belongsTo(Category, { foreignKey: 'category_id' });
+Category.hasMany(Product, { foreignKey: 'category_id', as: 'Products' });
+Product.belongsTo(Category, { foreignKey: 'category_id', as: 'Category' });
 
-Admin.hasMany(Order, { foreignKey: 'admin_id' });
-Order.belongsTo(Admin, { foreignKey: 'admin_id' });
+Admin.hasMany(Order, { foreignKey: 'admin_id', as: 'Orders' });
+Order.belongsTo(Admin, { foreignKey: 'admin_id', as: 'Admin' });
 
-Order.belongsToMany(Product, { through: OrderItem, foreignKey: 'order_id', otherKey: 'product_id' });
-Product.belongsToMany(Order, { through: OrderItem, foreignKey: 'product_id', otherKey: 'order_id' });
+Order.hasMany(OrderItem, { foreignKey: 'order_id', as: 'OrderItems' });
+OrderItem.belongsTo(Order, { foreignKey: 'order_id', as: 'Order' });
 
-Order.hasMany(OrderItem, { foreignKey: 'order_id' });
-OrderItem.belongsTo(Order, { foreignKey: 'order_id' });
-
-OrderItem.belongsTo(Product, { foreignKey: 'product_id' });
-Product.hasMany(OrderItem, { foreignKey: 'product_id' });
+OrderItem.belongsTo(Product, { foreignKey: 'product_id', as: 'Product' });
+Product.hasMany(OrderItem, { foreignKey: 'product_id', as: 'OrderItems' });
 
 // User associations
 User.hasMany(RefreshToken, { foreignKey: 'user_id', onDelete: 'CASCADE' });
