@@ -3,8 +3,10 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
+import swaggerUi from 'swagger-ui-express';
 
 import { configurePassport } from './src/config/passport.js';
+import { swaggerSpec } from './src/config/swagger.js';
 import authRoutes from './src/routes/auth.routes.js';
 import userRoutes from './src/routes/user.routes.js';
 import { apiRateLimiter } from './src/middleware/rateLimiter.js';
@@ -17,7 +19,9 @@ const app = express();
 // ─── Core middleware ──────────────────────────────────────────────────────────
 
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*',
+  origin: process.env.CORS_ORIGIN === '*' || !process.env.CORS_ORIGIN
+    ? true
+    : process.env.CORS_ORIGIN,
   credentials: true,
 }));
 app.use(express.json());
@@ -35,6 +39,10 @@ app.use((req, _res, next) => {
   logger.info(`${req.method} ${req.path} — ${req.ip}`);
   next();
 });
+
+// ─── Swagger UI ───────────────────────────────────────────────────────────────
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 

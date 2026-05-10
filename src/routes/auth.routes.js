@@ -1,3 +1,280 @@
+/**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: Аутентифікація та авторизація
+ */
+
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Реєстрація нового користувача
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [username, email, password, passwordConfirm]
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 minLength: 3
+ *                 maxLength: 100
+ *                 example: john_doe
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john@example.com
+ *               password:
+ *                 type: string
+ *                 minLength: 8
+ *                 example: Secret123
+ *               passwordConfirm:
+ *                 type: string
+ *                 example: Secret123
+ *     responses:
+ *       201:
+ *         description: Користувача зареєстровано, надіслано лист підтвердження
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data: { type: object, properties: { message: { type: string } } }
+ *       400:
+ *         description: Помилка валідації
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Вхід у систему
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john@example.com
+ *               password:
+ *                 type: string
+ *                 example: Secret123
+ *     responses:
+ *       200:
+ *         description: Успішний вхід
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthResponse'
+ *       401:
+ *         description: Невірний email або пароль
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: Вихід із системи
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Успішний вихід
+ *       401:
+ *         description: Не авторизовано
+ */
+
+/**
+ * @swagger
+ * /api/auth/refresh:
+ *   post:
+ *     summary: Оновлення access токена
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [refreshToken]
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *     responses:
+ *       200:
+ *         description: Новий access токен
+ *       401:
+ *         description: Невалідний refresh токен
+ */
+
+/**
+ * @swagger
+ * /api/auth/verify-email:
+ *   get:
+ *     summary: Підтвердження email
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Токен підтвердження з листа
+ *     responses:
+ *       200:
+ *         description: Email підтверджено
+ *       400:
+ *         description: Невалідний або прострочений токен
+ */
+
+/**
+ * @swagger
+ * /api/auth/resend-verification:
+ *   post:
+ *     summary: Повторно надіслати лист підтвердження
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john@example.com
+ *     responses:
+ *       200:
+ *         description: Лист надіслано
+ *       404:
+ *         description: Користувача не знайдено
+ */
+
+/**
+ * @swagger
+ * /api/auth/forgot-password:
+ *   post:
+ *     summary: Запит на скидання паролю
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john@example.com
+ *     responses:
+ *       200:
+ *         description: Лист зі скиданням паролю надіслано
+ */
+
+/**
+ * @swagger
+ * /api/auth/reset-password:
+ *   post:
+ *     summary: Скидання паролю за токеном
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [password, passwordConfirm]
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 minLength: 8
+ *                 example: NewSecret123
+ *               passwordConfirm:
+ *                 type: string
+ *                 example: NewSecret123
+ *     responses:
+ *       200:
+ *         description: Пароль успішно змінено
+ *       400:
+ *         description: Невалідний токен або помилка валідації
+ */
+
+/**
+ * @swagger
+ * /api/auth/change-password:
+ *   post:
+ *     summary: Зміна паролю (авторизований користувач)
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [currentPassword, newPassword, newPasswordConfirm]
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 example: Secret123
+ *               newPassword:
+ *                 type: string
+ *                 minLength: 8
+ *                 example: NewSecret456
+ *               newPasswordConfirm:
+ *                 type: string
+ *                 example: NewSecret456
+ *     responses:
+ *       200:
+ *         description: Пароль змінено
+ *       401:
+ *         description: Невірний поточний пароль
+ */
+
+/**
+ * @swagger
+ * /api/auth/google:
+ *   get:
+ *     summary: Вхід через Google OAuth
+ *     tags: [Auth]
+ *     description: Перенаправляє на сторінку авторизації Google
+ *     responses:
+ *       302:
+ *         description: Редирект на Google OAuth
+ */
+
 import { Router } from 'express';
 import passport from 'passport';
 import { body, query } from 'express-validator';
